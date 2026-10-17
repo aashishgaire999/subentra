@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useStore } from "@/lib/store";
+import { explainLocally } from "@/lib/explain-local";
 import { Button } from "./ui";
 
 export type Facts = Record<string, number | string>;
@@ -20,16 +21,21 @@ export function ExplainButton({ kind, facts, label = "Explain with AI" }: { kind
   async function run() {
     setBusy(true);
     setText("");
-    try {
-      const f = facts();
-      const res = await fetch("/api/explain", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ kind, facts: f }) });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "AI request failed");
+    const f = facts();
+    const show = (data: { text: string; fieldsSent: string[]; redactions: number; model: string }) => {
       setText(data.text);
       setMeta({ fields: data.fieldsSent, redactions: data.redactions, model: data.model });
       logAi({ kind, fieldsSent: data.fieldsSent, redactions: data.redactions, model: data.model, summary: String(data.text).slice(0, 180) });
-    } catch (e) {
-      setText((e as Error).message);
+    };
+    try {
+      const res = await fetch("/api/explain", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ kind, facts: f }) });
+      const data = await res.json();
+      if (res.status === 429) return setText(data.error);
+      if (!res.ok) throw new Error(data.error);
+      show(data);
+    } catch {
+      // No server route (static hosting) or AI unreachable: explain in the browser, nothing leaves the page.
+      show({ text: explainLocally(kind, f), fieldsSent: Object.keys(f), redactions: 0, model: "offline (rule-based)" });
     } finally {
       setBusy(false);
     }

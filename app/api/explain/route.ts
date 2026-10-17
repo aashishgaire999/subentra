@@ -1,4 +1,5 @@
 // AI explanation endpoint. OWASP LLM Top 10 controls are noted inline (LLM01, LLM02, ...).
+import { explainLocally } from "@/lib/explain-local";
 
 const KINDS = new Set(["dashboard", "forecast", "renewals", "import", "executive-summary"]);
 const MAX_FACTS = 40;
@@ -39,10 +40,7 @@ Rules:
 - Write 3-5 short sentences in plain English, then one line starting "Suggested action:".
 - No markdown, no links, no code.`;
 
-function fallback(kind: string, f: Record<string, number | string>) {
-  const lines = Object.entries(f).slice(0, 6).map(([k, v]) => `${k.replace(/_/g, " ")}: ${v}`);
-  return `Offline summary (no AI key configured) for ${kind}.\n${lines.join("\n")}\nSuggested action: review the largest variance first.`;
-}
+const fallback = explainLocally;
 
 export async function POST(req: Request) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";

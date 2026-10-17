@@ -34,3 +34,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## AI setup
+
+The "Explain with AI" buttons call `app/api/explain/route.ts`, which talks to Claude on the server. The browser only ever sends aggregate totals.
+
+- **Local:** `cp .env.example .env.local`, put your key in `ANTHROPIC_API_KEY`, then run `npm run dev`.
+- **Hosting:** the AI needs a host that runs server code (e.g. Vercel). Add `ANTHROPIC_API_KEY` as a server environment variable there and **never** use a `NEXT_PUBLIC_` prefix.
+- **No key, or static hosting (GitHub Pages):** the buttons fall back to a built-in, rule-based summary (`lib/explain-local.ts`). Nothing leaves the page, and the AI log marks these calls as `offline`.
