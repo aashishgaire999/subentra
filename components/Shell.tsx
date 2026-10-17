@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import logo from "@/public/subentra-logo.png";
 import { usePathname } from "next/navigation";
 import { StoreProvider, useStore } from "@/lib/store";
 import { company, users } from "@/lib/seed";
@@ -17,10 +19,9 @@ function Sidebar() {
   const path = usePathname();
   return (
     <aside className="hidden w-56 shrink-0 border-r border-line bg-surface md:block">
-      <div className="flex h-14 items-center gap-2 border-b border-line px-4">
-        <div className="grid size-7 place-items-center rounded-md bg-accent text-sm font-bold text-white">S</div>
-        <span className="font-semibold tracking-tight">SUBENTRA</span>
-      </div>
+      <Link href="/" aria-label="Subentra dashboard" className="flex h-14 items-center border-b border-line px-4">
+        <Image src={logo} alt="SUBENTRA" className="h-auto max-h-11 w-full object-contain" preload />
+      </Link>
       <nav className="space-y-5 p-3">
         {nav.map((g) => (
           <div key={g.group}>
