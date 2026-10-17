@@ -35,7 +35,7 @@ export function ExplainButton({ kind, facts, label = "Explain with AI" }: { kind
       show(data);
     } catch {
       // No server route (static hosting) or AI unreachable: explain in the browser, nothing leaves the page.
-      show({ text: explainLocally(kind, f), fieldsSent: Object.keys(f), redactions: 0, model: "offline (rule-based)" });
+      show({ text: explainLocally(kind, f), fieldsSent: Object.keys(f), redactions: 0, model: "built-in explainer (no data leaves the browser)" });
     } finally {
       setBusy(false);
     }

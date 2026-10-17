@@ -60,7 +60,7 @@ export async function POST(req: Request) {
   const key = process.env.ANTHROPIC_API_KEY;
   const model = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-5-5";
 
-  if (!key) return Response.json({ text: fallback(kind, facts), fieldsSent, redactions, model: "offline" });
+  if (!key) return Response.json({ text: fallback(kind, facts), fieldsSent, redactions, model: "built-in explainer" });
 
   try {
     const r = await fetch("https://api.anthropic.com/v1/messages", {
@@ -81,6 +81,6 @@ export async function POST(req: Request) {
     const text = raw.replace(/https?:\/\/\S+/g, "[link removed]").replace(/[<>`*#]/g, "").slice(0, 1500);
     return Response.json({ text, fieldsSent, redactions, model });
   } catch {
-    return Response.json({ text: fallback(kind, facts), fieldsSent, redactions, model: "offline (AI unavailable)" });
+    return Response.json({ text: fallback(kind, facts), fieldsSent, redactions, model: "built-in explainer (AI unavailable)" });
   }
 }
